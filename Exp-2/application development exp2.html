@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up</title>
+<style>
+:root {
+  --ink: #1f2430;
+  --muted: #6b7280;
+  --line: #d9dde3;
+  --accent: #4a3aff;
+  --accent-dark: #3826e0;
+  --danger: #e5484d;
+  --danger-bg: #fdecec;
+  --success: #1a9c6b;
+  --success-bg: #eafaf3;
+  --bg-top: #eef0fb;
+  --bg-bottom: #f7f5ff;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+  color: var(--ink);
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border-radius: var(--radius);
+  padding: 36px 32px 32px;
+  box-shadow: 0 20px 45px -20px rgba(31, 36, 48, 0.25);
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+input {
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: inherit;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74, 58, 255, 0.15);
+}
+
+.hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  display: block;
+}
+
+.field.error input {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.field.error .hint {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.field.success input {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.field.success .hint {
+  color: var(--success);
+}
+
+button[type="submit"] {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+button[type="submit"]:hover {
+  background: var(--accent-dark);
+}
+
+button[type="submit"]:active {
+  transform: translateY(1px);
+}
+
+.success-message {
+  display: none;
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  background: var(--success-bg);
+  color: var(--success);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.success-message.show {
+  display: block;
+}
+</style>
+</head>
+<body>
+
+  <main class="card">
+    <h1>Sign Up</h1>
+    <p class="subtitle">Create your account to get started</p>
+
+    <form id="registrationForm" novalidate>
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Choose a username" autocomplete="username">
+        <span class="hint" id="usernameHint">Username must be between 3 and 25 characters.</span>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" placeholder="hello@example.com" autocomplete="email">
+        <span class="hint" id="emailHint">Please provide a valid email address.</span>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" name="phone" placeholder="123-456-7890" autocomplete="tel">
+        <span class="hint" id="phoneHint">Please enter a valid 10-digit phone number.</span>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" autocomplete="new-password">
+        <span class="hint" id="passwordHint">Password must be at least 8 characters and include 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character (@#$%^&amp;*).</span>
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" autocomplete="new-password">
+        <span class="hint" id="confirmPasswordHint">Please enter your password again.</span>
+      </div>
+
+      <button type="submit" id="submitBtn">Sign Up</button>
+
+      <p class="success-message" id="successMessage" role="status">🎉 Account created successfully!</p>
+
+    </form>
+  </main>
+
+<script>
+// ------------------------------------------------------------------
+// Grab elements
+// ------------------------------------------------------------------
+const form = document.getElementById('registrationForm');
+
+const username = document.getElementById('username');
+const email = document.getElementById('email');
+const phone = document.getElementById('phone');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirmPassword');
+
+const successMessage = document.getElementById('successMessage');
+
+// Default hint text for each field (restored when the field becomes valid)
+const defaultHints = {
+  username: 'Username must be between 3 and 25 characters.',
+  email: 'Please provide a valid email address.',
+  phone: 'Please enter a valid 10-digit phone number.',
+  password: 'Password must be at least 8 characters and include 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character (@#$%^&*).',
+  confirmPassword: 'Please enter your password again.'
+};
+
+// ------------------------------------------------------------------
+// Helpers to mark a field valid / invalid
+// ------------------------------------------------------------------
+function setError(input, message) {
+  const field = input.closest('.field');
+  const hint = document.getElementById(input.id + 'Hint');
+  field.classList.remove('success');
+  field.classList.add('error');
+  hint.textContent = message;
+  return false;
+}
+
+function setSuccess(input) {
+  const field = input.closest('.field');
+  const hint = document.getElementById(input.id + 'Hint');
+  field.classList.remove('error');
+  field.classList.add('success');
+  hint.textContent = defaultHints[input.id];
+  return true;
+}
+
+function clearState(input) {
+  const field = input.closest('.field');
+  const hint = document.getElementById(input.id + 'Hint');
+  field.classList.remove('error', 'success');
+  hint.textContent = defaultHints[input.id];
+}
+
+// ------------------------------------------------------------------
+// Individual validation functions
+// ------------------------------------------------------------------
+function validateUsername() {
+  const value = username.value.trim();
+  if (value === '') {
+    return setError(username, 'Username is required.');
+  }
+  if (value.length < 3 || value.length > 25) {
+    return setError(username, 'Username must be between 3 and 25 characters.');
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+    return setError(username, 'Username can only contain letters, numbers, and underscores.');
+  }
+  return setSuccess(username);
+}
+
+function validateEmail() {
+  const value = email.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (value === '') {
+    return setError(email, 'Email is required.');
+  }
+  if (!emailRegex.test(value)) {
+    return setError(email, 'Please provide a valid email address.');
+  }
+  return setSuccess(email);
+}
+
+function validatePhone() {
+  const value = phone.value.trim();
+  const digitsOnly = value.replace(/\D/g, '');
+  if (value === '') {
+    return setError(phone, 'Phone number is required.');
+  }
+  if (digitsOnly.length !== 10) {
+    return setError(phone, 'Please enter a valid 10-digit phone number.');
+  }
+  return setSuccess(phone);
+}
+
+function validatePassword() {
+  const value = password.value;
+  const hasLower = /[a-z]/.test(value);
+  const hasUpper = /[A-Z]/.test(value);
+  const hasNumber = /\d/.test(value);
+  const hasSpecial = /[@#$%^&*]/.test(value);
+
+  if (value === '') {
+    return setError(password, 'Password is required.');
+  }
+  if (value.length < 8 || !hasLower || !hasUpper || !hasNumber || !hasSpecial) {
+    return setError(
+      password,
+      'Password must be at least 8 characters and include 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character (@#$%^&*).'
+    );
+  }
+  const ok = setSuccess(password);
+  // Re-check confirm password whenever password changes
+  if (confirmPassword.value !== '') validateConfirmPassword();
+  return ok;
+}
+
+function validateConfirmPassword() {
+  const value = confirmPassword.value;
+  if (value === '') {
+    return setError(confirmPassword, 'Please enter your password again.');
+  }
+  if (value !== password.value) {
+    return setError(confirmPassword, "Passwords don't match.");
+  }
+  return setSuccess(confirmPassword);
+}
+
+// ------------------------------------------------------------------
+// Event listeners — validate on blur (as the user leaves a field)
+// and clear the error styling as soon as they start correcting it
+// ------------------------------------------------------------------
+username.addEventListener('blur', validateUsername);
+email.addEventListener('blur', validateEmail);
+phone.addEventListener('blur', validatePhone);
+password.addEventListener('blur', validatePassword);
+confirmPassword.addEventListener('blur', validateConfirmPassword);
+
+username.addEventListener('input', () => { if (username.closest('.field').classList.contains('error')) validateUsername(); });
+email.addEventListener('input', () => { if (email.closest('.field').classList.contains('error')) validateEmail(); });
+phone.addEventListener('input', () => { if (phone.closest('.field').classList.contains('error')) validatePhone(); });
+password.addEventListener('input', () => { if (password.closest('.field').classList.contains('error')) validatePassword(); });
+confirmPassword.addEventListener('input', () => { if (confirmPassword.closest('.field').classList.contains('error')) validateConfirmPassword(); });
+
+// ------------------------------------------------------------------
+// Form submit — run every validator, block submission on any failure
+// ------------------------------------------------------------------
+form.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  const isUsernameValid = validateUsername();
+  const isEmailValid = validateEmail();
+  const isPhoneValid = validatePhone();
+  const isPasswordValid = validatePassword();
+  const isConfirmPasswordValid = validateConfirmPassword();
+
+  const allValid = isUsernameValid && isEmailValid && isPhoneValid && isPasswordValid && isConfirmPasswordValid;
+
+  if (allValid) {
+    successMessage.classList.add('show');
+    // In a real app you'd submit the data to a server here, e.g.:
+    // fetch('/api/register', { method: 'POST', body: new FormData(form) });
+    form.reset();
+    [username, email, phone, password, confirmPassword].forEach(clearState);
+  } else {
+    successMessage.classList.remove('show');
+    // Move focus to the first invalid field for accessibility
+    const firstError = form.querySelector('.field.error input');
+    if (firstError) firstError.focus();
+  }
+});
+</script>
+</body>
+</html>

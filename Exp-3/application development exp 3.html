@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo App</title>
+<style>
+  :root {
+    --purple: #7c3aed;
+    --purple-dark: #6d28d9;
+    --red: #e0533d;
+    --red-dark: #c9432e;
+    --ink: #22252b;
+    --muted: #8b8f98;
+    --line: #eef0f3;
+    --bg-field: #f4f5f7;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    background: #f0f2f5;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+  }
+
+  .frame {
+    padding: 4px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #45c2c2, #6a7ff0);
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 25px 50px -20px rgba(60, 70, 120, 0.4);
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 19px;
+    padding: 28px 26px 22px;
+  }
+
+  h1 {
+    margin: 0 0 20px;
+    font-size: 26px;
+    font-weight: 800;
+  }
+
+  .add-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  #todoInput {
+    flex: 1;
+    border: none;
+    background: var(--bg-field);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+    color: var(--ink);
+  }
+
+  #todoInput::placeholder {
+    color: var(--muted);
+  }
+
+  #todoInput:focus {
+    box-shadow: 0 0 0 2px var(--purple);
+  }
+
+  #addBtn {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 10px;
+    background: var(--purple);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+
+  #addBtn:hover { background: var(--purple-dark); }
+  #addBtn:active { transform: translateY(1px); }
+
+  #todoList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 20px;
+  }
+
+  .todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-field);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .todo-item:hover {
+    background: #ebedf1;
+  }
+
+  .todo-text {
+    flex: 1;
+    word-break: break-word;
+    padding-right: 10px;
+  }
+
+  .todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .delete-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    background: var(--red);
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s ease;
+  }
+
+  .todo-item:hover .delete-btn {
+    display: flex;
+  }
+
+  .delete-btn:hover {
+    background: var(--red-dark);
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 18px 0 6px;
+  }
+
+  .footer {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #taskCount {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  #clearAllBtn {
+    border: none;
+    background: var(--purple);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+
+  #clearAllBtn:hover { background: var(--purple-dark); }
+  #clearAllBtn:active { transform: translateY(1px); }
+
+  #clearAllBtn:disabled {
+    background: #c9c9d1;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+  <div class="frame">
+    <div class="card">
+      <h1>Todo App</h1>
+
+      <div class="add-row">
+        <input type="text" id="todoInput" placeholder="Add your new todo" maxlength="120">
+        <button id="addBtn" type="button" aria-label="Add todo">+</button>
+      </div>
+
+      <ul id="todoList"></ul>
+      <p class="empty-state" id="emptyState">No tasks yet — add one above 🎉</p>
+
+      <div class="footer">
+        <span id="taskCount">You have 0 pending tasks</span>
+        <button id="clearAllBtn" type="button">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ------------------------------------------------------------------
+  // DOM references
+  // ------------------------------------------------------------------
+  const todoInput = document.getElementById('todoInput');
+  const addBtn = document.getElementById('addBtn');
+  const todoList = document.getElementById('todoList');
+  const taskCount = document.getElementById('taskCount');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  const emptyState = document.getElementById('emptyState');
+
+  const STORAGE_KEY = 'todoApp.tasks';
+
+  // Each task: { id, text, completed }
+  let tasks = loadTasks();
+
+  // ------------------------------------------------------------------
+  // Storage helpers
+  // ------------------------------------------------------------------
+  function loadTasks() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.error('Could not read saved tasks:', err);
+      return [];
+    }
+  }
+
+  function saveTasks() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  // ------------------------------------------------------------------
+  // Rendering
+  // ------------------------------------------------------------------
+  function render() {
+    todoList.innerHTML = '';
+
+    if (tasks.length === 0) {
+      emptyState.style.display = 'block';
+    } else {
+      emptyState.style.display = 'none';
+    }
+
+    tasks.forEach(task => {
+      const li = document.createElement('li');
+      li.className = 'todo-item' + (task.completed ? ' completed' : '');
+      li.dataset.id = task.id;
+
+      const span = document.createElement('span');
+      span.className = 'todo-text';
+      span.textContent = task.text;
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'delete-btn';
+      delBtn.type = 'button';
+      delBtn.setAttribute('aria-label', 'Delete task');
+      delBtn.innerHTML = '&#128465;'; // trash icon
+
+      li.appendChild(span);
+      li.appendChild(delBtn);
+      todoList.appendChild(li);
+
+      // Toggle completed on clicking the row (but not the delete button)
+      li.addEventListener('click', () => toggleComplete(task.id));
+
+      // Delete this task
+      delBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        deleteTask(task.id);
+      });
+    });
+
+    const pending = tasks.filter(t => !t.completed).length;
+    taskCount.textContent = `You have ${pending} pending task${pending === 1 ? '' : 's'}`;
+
+    clearAllBtn.disabled = tasks.length === 0;
+  }
+
+  // ------------------------------------------------------------------
+  // Task operations
+  // ------------------------------------------------------------------
+  function addTask() {
+    const text = todoInput.value.trim();
+    if (text === '') {
+      todoInput.focus();
+      return;
+    }
+
+    tasks.push({
+      id: Date.now().toString(),
+      text: text,
+      completed: false
+    });
+
+    todoInput.value = '';
+    todoInput.focus();
+    saveTasks();
+    render();
+  }
+
+  function toggleComplete(id) {
+    tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+    saveTasks();
+    render();
+  }
+
+  function deleteTask(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks();
+    render();
+  }
+
+  function clearAll() {
+    if (tasks.length === 0) return;
+    if (confirm('Clear all tasks? This cannot be undone.')) {
+      tasks = [];
+      saveTasks();
+      render();
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Event listeners
+  // ------------------------------------------------------------------
+  addBtn.addEventListener('click', addTask);
+
+  todoInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      addTask();
+    }
+  });
+
+  clearAllBtn.addEventListener('click', clearAll);
+
+  // ------------------------------------------------------------------
+  // Initial render
+  // ------------------------------------------------------------------
+  render();
+</script>
+</body>
+</html>

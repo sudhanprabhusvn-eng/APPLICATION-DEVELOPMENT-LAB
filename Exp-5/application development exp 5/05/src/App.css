@@ -1,0 +1,174 @@
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --accent: #06b6d4;
+  --ink: #1f2430;
+  --muted: #6b7280;
+  --line: #d9dde3;
+  --danger: #dc2626;
+  --danger-bg: #fdecec;
+  --success: #15803d;
+  --success-bg: #e8f8ee;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  color: var(--ink);
+  background: #f4f5fb;
+}
+
+/* ---------- Split-screen layout ---------- */
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #fff;
+  background: linear-gradient(145deg, var(--primary), #312e81);
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.35;
+}
+.shape-a { width: 320px; height: 320px; background: var(--accent); top: -90px; left: -90px; }
+.shape-b { width: 220px; height: 220px; background: #a78bfa; bottom: -60px; right: -40px; }
+.shape-c { width: 120px; height: 120px; background: #fff; opacity: 0.12; top: 55%; left: 12%; }
+
+.panel-text { position: relative; max-width: 340px; }
+.panel-text h1 { margin: 0 0 12px; font-size: 38px; line-height: 1.15; }
+.panel-text p { margin: 0; font-size: 17px; opacity: 0.9; }
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 16px;
+}
+
+/* ---------- Card and forms ---------- */
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 45px -22px rgba(31, 36, 48, 0.3);
+}
+
+.card h2 { margin: 0 0 4px; font-size: 26px; }
+.muted { margin: 0 0 20px; color: var(--muted); font-size: 14px; }
+
+.field { display: flex; flex-direction: column; margin-bottom: 16px; }
+
+label { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+input {
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+input[aria-invalid="true"] {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.error { margin-top: 6px; font-size: 12px; color: var(--danger); font-weight: 500; }
+
+/* Password strength hint */
+.strength { margin-top: 6px; font-size: 12px; font-weight: 600; }
+.strength.s0, .strength.s1 { color: var(--danger); }
+.strength.s2, .strength.s3 { color: #d97706; }
+.strength.s4 { color: var(--success); }
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.btn:hover { background: var(--primary-dark); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { background: #a5a8d6; cursor: not-allowed; }
+
+.switch { margin: 18px 0 0; text-align: center; font-size: 14px; color: var(--muted); }
+
+.link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.link:hover { text-decoration: underline; }
+
+/* ---------- Banners ---------- */
+.alert {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.content > .alert { margin-bottom: 0; }
+.error-box { background: var(--danger-bg); color: var(--danger); }
+.success-box { background: var(--success-bg); color: var(--success); }
+
+/* ---------- Dashboard ---------- */
+.dashboard { text-align: center; }
+.dashboard .muted { margin-bottom: 10px; }
+.email-chip {
+  display: inline-block;
+  margin: 0 0 24px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #eef0fb;
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .panel { min-height: 200px; padding: 28px 20px; }
+  .panel-text h1 { font-size: 28px; }
+  .shape-a { width: 200px; height: 200px; }
+  .shape-b { width: 140px; height: 140px; }
+  .shape-c { display: none; }
+  .content { padding: 24px 16px 40px; }
+}

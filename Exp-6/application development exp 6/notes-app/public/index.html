@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketNotes • MongoDB Note Taking App</title>
+  <meta name="description" content="A modern, full-stack note-taking web application built with Node.js, Express, and MongoDB.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>PocketNotes</h1>
+          <span class="subtext">MongoDB Full-Stack Suite</span>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Search notes by title or content..." autocomplete="off">
+        <button id="clearSearch" class="clear-btn" title="Clear search" hidden aria-label="Clear search">✕</button>
+      </div>
+
+      <div class="nav-actions">
+        <div id="dbBadge" class="status-badge checking">
+          <span class="pulse-dot"></span>
+          <span id="dbStatusText">Checking DB...</span>
+        </div>
+        <button id="apiInfoBtn" class="icon-btn" title="View REST API Docs" aria-label="API Endpoints">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-wrapper">
+    <!-- Left / Top Column: Note Composer Form -->
+    <section class="composer-section">
+      <div class="card composer-card" id="composerCard">
+        <div class="card-header">
+          <div class="header-title">
+            <span class="mode-badge" id="formModeBadge">New Note</span>
+            <h2 id="formTitle">Create a Note</h2>
+          </div>
+          <button type="button" id="cancelEditTopBtn" class="cancel-link" hidden>Cancel</button>
+        </div>
+
+        <form id="noteForm">
+          <div class="form-group">
+            <label for="titleInput">Note Title</label>
+            <input id="titleInput" type="text" placeholder="e.g., MongoDB Connection Architecture" maxlength="100" autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="categoryInput">Category</label>
+              <select id="categoryInput">
+                <option value="General">📌 General</option>
+                <option value="Work">💼 Work</option>
+                <option value="Study">📚 Study</option>
+                <option value="Ideas">💡 Ideas</option>
+                <option value="Personal">🏠 Personal</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Color Tag</label>
+              <div class="color-picker" id="colorPicker">
+                <button type="button" class="color-dot active" data-color="#6366f1" style="--c: #6366f1" title="Indigo"></button>
+                <button type="button" class="color-dot" data-color="#0ea5e9" style="--c: #0ea5e9" title="Sky"></button>
+                <button type="button" class="color-dot" data-color="#10b981" style="--c: #10b981" title="Emerald"></button>
+                <button type="button" class="color-dot" data-color="#f59e0b" style="--c: #f59e0b" title="Amber"></button>
+                <button type="button" class="color-dot" data-color="#ec4899" style="--c: #ec4899" title="Rose"></button>
+                <button type="button" class="color-dot" data-color="#8b5cf6" style="--c: #8b5cf6" title="Purple"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-with-meta">
+              <label for="contentInput">Content</label>
+              <span class="char-count" id="charCount">0 words</span>
+            </div>
+            <textarea id="contentInput" rows="5" placeholder="Write down your thoughts, reminders, code snippets..." required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="saveBtn" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span id="saveBtnText">Save Note</span>
+            </button>
+            <button type="button" id="cancelBtn" class="btn btn-secondary" hidden>
+              Cancel Edit
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Quick Stats Card -->
+      <div class="card stats-card">
+        <h3>Database Overview</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number" id="totalNotesStat">0</span>
+            <span class="stat-label">Total Notes</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="backendEngine">Express</span>
+            <span class="stat-label">REST API</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">Mongoose</span>
+            <span class="stat-label">ODM Layer</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right / Bottom Column: Notes Feed -->
+    <section class="notes-section">
+      <!-- Filter and View Controls -->
+      <div class="filter-bar">
+        <div class="category-pills" id="categoryPills">
+          <button class="pill active" data-category="ALL">All Notes</button>
+          <button class="pill" data-category="General">General</button>
+          <button class="pill" data-category="Work">Work</button>
+          <button class="pill" data-category="Study">Study</button>
+          <button class="pill" data-category="Ideas">Ideas</button>
+          <button class="pill" data-category="Personal">Personal</button>
+        </div>
+
+        <div class="sort-wrapper">
+          <label for="sortSelect" class="sr-only">Sort notes</label>
+          <select id="sortSelect" class="sort-select">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="title">Alphabetical (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Feed Header -->
+      <div class="feed-header">
+        <div class="feed-title-wrap">
+          <h2 class="feed-title">All Saved Notes</h2>
+          <span id="feedCount" class="feed-count">0 items</span>
+        </div>
+        <button id="refreshBtn" class="refresh-btn" title="Refresh Notes">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Sync
+        </button>
+      </div>
+
+      <!-- Notes Grid -->
+      <div id="notesContainer" class="notes-grid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Connecting to MongoDB & fetching notes...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- API Modal for Demonstration & Testing -->
+  <dialog id="apiModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Backend REST API Architecture (Exp 6)</h3>
+        <button id="closeApiModal" class="close-btn" aria-label="Close dialog">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">This application implements full CRUD operations interacting with MongoDB via Mongoose ODM:</p>
+        <div class="api-list">
+          <div class="api-item">
+            <span class="badge get">GET</span>
+            <code>/api/notes</code>
+            <span class="api-desc">Retrieve all notes (supports <code>?q=term</code>)</span>
+          </div>
+          <div class="api-item">
+            <span class="badge get">GET</span>
+            <code>/api/notes/:id</code>
+            <span class="api-desc">Retrieve a single note by MongoDB ObjectId</span>
+          </div>
+          <div class="api-item">
+            <span class="badge post">POST</span>
+            <code>/api/notes</code>
+            <span class="api-desc">Create a new note (JSON body with title, content, etc.)</span>
+          </div>
+          <div class="api-item">
+            <span class="badge put">PUT</span>
+            <code>/api/notes/:id</code>
+            <span class="api-desc">Update an existing note by ObjectId</span>
+          </div>
+          <div class="api-item">
+            <span class="badge del">DELETE</span>
+            <code>/api/notes/:id</code>
+            <span class="api-desc">Permanently remove a note from MongoDB</span>
+          </div>
+          <div class="api-item">
+            <span class="badge get">GET</span>
+            <code>/api/health</code>
+            <span class="api-desc">Check server and MongoDB connection state</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Delete Confirmation Dialog -->
+  <dialog id="deleteModal" class="modal">
+    <div class="modal-box confirmation-box">
+      <h3>Delete Note?</h3>
+      <p>Are you sure you want to permanently delete this note from the MongoDB database? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+        <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

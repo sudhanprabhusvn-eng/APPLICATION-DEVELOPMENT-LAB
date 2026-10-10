@@ -1,0 +1,12 @@
+{
+  "name": "node-static-server",
+  "version": "1.0.0",
+  "description": "Basic Node.js web server delivering static HTML pages",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
